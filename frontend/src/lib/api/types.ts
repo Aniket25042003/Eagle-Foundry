@@ -10,6 +10,7 @@ export type OrgVerificationStatus = 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED';
 export type OrgJoinRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 export type StartupStatus = 'DRAFT' | 'SUBMITTED' | 'NEEDS_CHANGES' | 'APPROVED' | 'ARCHIVED' | 'REJECTED';
 export type OpportunityStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED';
+export type ProjectStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED';
 export type ApplicationStatus = 'SUBMITTED' | 'SHORTLISTED' | 'INTERVIEW' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN';
 export type JoinRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELLED';
 export type ReportStatus = 'PENDING' | 'REVIEWING' | 'RESOLVED' | 'DISMISSED';
@@ -173,6 +174,51 @@ export interface Application {
   statusHistory?: ApplicationStatusHistoryEntry[];
 }
 
+export interface Project {
+  id: string;
+  orgId: string;
+  title: string;
+  description: string | null;
+  requirements: string | null;
+  budgetType: BudgetType | null;
+  budgetRange: string | null;
+  estimatedDuration: string | null;
+  deadline: string | null;
+  tags: string[];
+  status: ProjectStatus;
+  publishedAt: string | null;
+  closedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  org?: Org;
+}
+
+export interface ProjectSubmission {
+  id: string;
+  projectId: string;
+  profileId: string;
+  coverLetter: string | null;
+  resumeUrl: string | null;
+  formAnswers?: Record<string, string>;
+  status: ApplicationStatus;
+  threadId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  project?: Project;
+  profile?: StudentProfile;
+  statusHistory?: ProjectSubmissionStatusHistoryEntry[];
+}
+
+export interface ProjectSubmissionStatusHistoryEntry {
+  id: string;
+  projectSubmissionId: string;
+  fromStatus: ApplicationStatus | null;
+  toStatus: ApplicationStatus;
+  changedBy: string;
+  note: string | null;
+  createdAt: string;
+}
+
 export interface ApplicationStatusHistoryEntry {
   id: string;
   applicationId: string;
@@ -251,7 +297,7 @@ export interface Notification {
 export interface Report {
   id: string;
   reporterId: string;
-  targetType: 'STARTUP' | 'OPPORTUNITY' | 'USER' | 'MESSAGE' | 'ORG';
+  targetType: 'STARTUP' | 'OPPORTUNITY' | 'PROJECT' | 'USER' | 'MESSAGE' | 'ORG';
   targetId: string;
   reporterReason: string;
   evidenceText: string | null;
@@ -396,12 +442,35 @@ export interface CreateOpportunityPayload {
 
 export interface UpdateOpportunityPayload extends Partial<CreateOpportunityPayload> { }
 
+export interface CreateProjectPayload {
+  title: string;
+  description?: string | null;
+  requirements?: string | null;
+  budgetType?: BudgetType | null;
+  budgetRange?: string | null;
+  estimatedDuration?: string | null;
+  deadline?: string | null;
+  tags?: string[];
+}
+
+export interface UpdateProjectPayload extends Partial<CreateProjectPayload> { }
+
 export interface CreateApplicationPayload {
   coverLetter?: string | null;
   resumeUrl?: string | null;
 }
 
+export interface CreateProjectSubmissionPayload {
+  coverLetter?: string | null;
+  resumeUrl?: string | null;
+}
+
 export interface UpdateApplicationStatusPayload {
+  status: 'SHORTLISTED' | 'INTERVIEW' | 'SELECTED' | 'REJECTED';
+  note?: string | null;
+}
+
+export interface UpdateProjectSubmissionStatusPayload {
   status: 'SHORTLISTED' | 'INTERVIEW' | 'SELECTED' | 'REJECTED';
   note?: string | null;
 }
@@ -456,7 +525,7 @@ export interface PresignResumePayload {
 }
 
 export interface CreateReportPayload {
-  targetType: 'STARTUP' | 'OPPORTUNITY' | 'USER' | 'MESSAGE' | 'ORG';
+  targetType: 'STARTUP' | 'OPPORTUNITY' | 'PROJECT' | 'USER' | 'MESSAGE' | 'ORG';
   targetId: string;
   reporterReason: string;
   evidenceText?: string | null;
@@ -600,7 +669,7 @@ export interface AdminResetMfaResponse {
 }
 
 export interface SearchResult {
-  type: 'startup' | 'opportunity' | 'student' | 'organization';
+  type: 'startup' | 'opportunity' | 'project' | 'student' | 'organization';
   id: string;
   title: string;
   subtitle: string | null;

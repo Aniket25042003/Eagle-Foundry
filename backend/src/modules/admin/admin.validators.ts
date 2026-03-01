@@ -33,7 +33,7 @@ export const listOrgVerificationsQuerySchema = z.object({
 
 export const createReportSchema = z.object({
     reporterReason: z.string().min(1, 'Reason is required').max(1000),
-    targetType: z.enum(['USER', 'ORG', 'STARTUP', 'OPPORTUNITY', 'MESSAGE']),
+    targetType: z.enum(['USER', 'ORG', 'STARTUP', 'OPPORTUNITY', 'PROJECT', 'MESSAGE']),
     targetId: z.string().uuid(),
     evidenceText: z.string().max(2000).optional().nullable(),
     evidenceMessageId: z.string().uuid().optional().nullable(),

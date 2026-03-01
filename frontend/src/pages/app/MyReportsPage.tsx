@@ -18,6 +18,7 @@ import { format } from 'date-fns';
 const TARGET_TYPE_OPTIONS = [
   { value: 'STARTUP', label: 'Startup' },
   { value: 'OPPORTUNITY', label: 'Opportunity' },
+  { value: 'PROJECT', label: 'Project' },
   { value: 'USER', label: 'User' },
   { value: 'MESSAGE', label: 'Message' },
   { value: 'ORG', label: 'Organization' },

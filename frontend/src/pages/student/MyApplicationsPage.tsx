@@ -1,9 +1,10 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { format, isAfter, subDays, subMonths } from 'date-fns';
 import { api } from '@/lib/api/client';
 import { endpoints } from '@/lib/api/endpoints';
-import type { Application, ApplicationStatus } from '@/lib/api/types';
+import type { Application, ApplicationStatus, ProjectSubmission } from '@/lib/api/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DataTable, type Column } from '@/components/ui/data-table';
@@ -12,9 +13,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { TableSkeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from '@/components/ui/toast';
-import { format, isAfter, subDays, subMonths } from 'date-fns';
 
-// Extended application type with extra opportunity metadata from the API
 interface ApplicationWithMeta extends Application {
   opportunity?: {
     id: string;
@@ -30,107 +29,170 @@ interface ApplicationWithMeta extends Application {
   };
 }
 
+interface ProjectSubmissionWithMeta extends ProjectSubmission {
+  project?: {
+    id: string;
+    title: string;
+    status: string;
+    budgetType?: string | null;
+    budgetRange?: string | null;
+    tags?: string[];
+    publishedAt?: string | null;
+    closedAt?: string | null;
+    estimatedDuration?: string | null;
+    deadline?: string | null;
+    org?: { id: string; name: string } | null;
+    _count?: { submissions?: number };
+  };
+}
+
 type DateFilter = '' | '7d' | '30d' | '90d';
+
+type UnifiedItem = {
+  id: string;
+  type: 'OPPORTUNITY' | 'PROJECT';
+  status: ApplicationStatus;
+  createdAt: string;
+  title: string;
+  listingId: string;
+  listingStatus?: string;
+  org?: { id: string; name: string } | null;
+  totalCount?: number;
+};
 
 export default function MyApplicationsPage(): JSX.Element {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [withdrawTarget, setWithdrawTarget] = useState<{ id: string; title: string } | null>(null);
+  const [withdrawTarget, setWithdrawTarget] = useState<{ id: string; title: string; type: 'OPPORTUNITY' | 'PROJECT' } | null>(null);
 
-  // Filter state
   const [statusFilter, setStatusFilter] = useState<string>('');
+  const [typeFilter, setTypeFilter] = useState<string>('');
   const [dateFilter, setDateFilter] = useState<DateFilter>('');
   const [search, setSearch] = useState('');
 
-  const { data: applications = [], isLoading } = useQuery({
+  const { data: applications = [], isLoading: applicationsLoading } = useQuery({
     queryKey: ['applications', 'me'],
     queryFn: async () => {
-      const res = await api.get<{ data?: ApplicationWithMeta[] }>(
-        endpoints.applications.me,
-        { params: { limit: 100 } },
-      );
+      const res = await api.get<{ data?: ApplicationWithMeta[] }>(endpoints.applications.me, { params: { limit: 100 } });
       const body = res.data;
       return (body && typeof body === 'object' && 'data' in body ? body.data : body) ?? [];
     },
   });
 
-  // Apply client-side filters
-  const filtered = useMemo(() => {
-    let list = applications as ApplicationWithMeta[];
+  const { data: projectSubmissions = [], isLoading: projectSubmissionsLoading } = useQuery({
+    queryKey: ['project-submissions', 'me'],
+    queryFn: async () => {
+      const res = await api.get<{ data?: ProjectSubmissionWithMeta[] }>(endpoints.projectSubmissions.me, { params: { limit: 100 } });
+      const body = res.data;
+      return (body && typeof body === 'object' && 'data' in body ? body.data : body) ?? [];
+    },
+  });
 
-    // Status filter
+  const unifiedList = useMemo<UnifiedItem[]>(() => {
+    const opportunityItems: UnifiedItem[] = (applications as ApplicationWithMeta[]).map((a) => ({
+      id: a.id,
+      type: 'OPPORTUNITY',
+      status: a.status,
+      createdAt: a.createdAt,
+      title: a.opportunity?.title ?? '—',
+      listingId: a.opportunityId ?? a.opportunity?.id ?? '',
+      listingStatus: a.opportunity?.status,
+      org: a.opportunity?.org,
+      totalCount: a.opportunity?._count?.applications,
+    }));
+
+    const projectItems: UnifiedItem[] = (projectSubmissions as ProjectSubmissionWithMeta[]).map((s) => ({
+      id: s.id,
+      type: 'PROJECT',
+      status: s.status,
+      createdAt: s.createdAt,
+      title: s.project?.title ?? '—',
+      listingId: s.projectId ?? s.project?.id ?? '',
+      listingStatus: s.project?.status,
+      org: s.project?.org,
+      totalCount: s.project?._count?.submissions,
+    }));
+
+    return [...opportunityItems, ...projectItems].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
+  }, [applications, projectSubmissions]);
+
+  const filtered = useMemo(() => {
+    let list = unifiedList;
+
     if (statusFilter) {
       list = list.filter((a) => a.status === statusFilter);
     }
 
-    // Date filter
+    if (typeFilter) {
+      list = list.filter((a) => a.type === typeFilter);
+    }
+
     if (dateFilter) {
       const now = new Date();
       const cutoff =
-        dateFilter === '7d'
-          ? subDays(now, 7)
-          : dateFilter === '30d'
-            ? subDays(now, 30)
-            : subMonths(now, 3);
+        dateFilter === '7d' ? subDays(now, 7) : dateFilter === '30d' ? subDays(now, 30) : subMonths(now, 3);
       list = list.filter((a) => isAfter(new Date(a.createdAt), cutoff));
     }
 
-    // Search filter (opportunity title or org name)
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(
-        (a) =>
-          a.opportunity?.title?.toLowerCase().includes(q) ||
-          a.opportunity?.org?.name?.toLowerCase().includes(q),
-      );
+      list = list.filter((a) => a.title.toLowerCase().includes(q) || a.org?.name?.toLowerCase().includes(q));
     }
 
     return list;
-  }, [applications, statusFilter, dateFilter, search]);
+  }, [unifiedList, statusFilter, typeFilter, dateFilter, search]);
 
   const withdrawMutation = useMutation({
-    mutationFn: async (applicationId: string) => {
-      await api.post(endpoints.applications.withdraw(applicationId));
+    mutationFn: async (target: { id: string; type: 'OPPORTUNITY' | 'PROJECT' }) => {
+      if (target.type === 'PROJECT') {
+        await api.post(endpoints.projectSubmissions.withdraw(target.id));
+      } else {
+        await api.post(endpoints.applications.withdraw(target.id));
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['applications', 'me'] });
+      queryClient.invalidateQueries({ queryKey: ['project-submissions', 'me'] });
       setWithdrawTarget(null);
-      toast.success('Application withdrawn');
+      toast.success('Submission withdrawn');
     },
     onError: (err: Error) => {
-      toast.error(err.message ?? 'Failed to withdraw application');
+      toast.error(err.message ?? 'Failed to withdraw');
     },
   });
 
-  const columns: Column<ApplicationWithMeta & Record<string, unknown>>[] = [
+  const columns: Column<UnifiedItem & Record<string, unknown>>[] = [
     {
-      key: 'opportunity',
-      header: 'Opportunity',
-      render: (row) => {
-        const opp = row.opportunity;
-        const title = opp?.title ?? '—';
-        const opportunityId = row.opportunityId ?? opp?.id;
-        return opportunityId ? (
+      key: 'type',
+      header: 'Type',
+      render: (row) => <Badge>{row.type}</Badge>,
+    },
+    {
+      key: 'title',
+      header: 'Title',
+      render: (row) =>
+        row.listingId ? (
           <button
             type="button"
             className="text-left text-zinc-300 underline underline-offset-2 hover:text-white"
             onClick={(e) => {
               e.stopPropagation();
-              navigate(`/opportunities/${opportunityId}`);
+              navigate(row.type === 'PROJECT' ? `/projects/${row.listingId}` : `/opportunities/${row.listingId}`);
             }}
           >
-            {title}
+            {row.title}
           </button>
         ) : (
-          <span className="text-zinc-300">{title}</span>
-        );
-      },
+          <span className="text-zinc-300">{row.title}</span>
+        ),
     },
     {
       key: 'organization',
       header: 'Organization',
       render: (row) => {
-        const org = row.opportunity?.org;
+        const org = row.org;
         return org ? (
           <button
             type="button"
@@ -153,30 +215,19 @@ export default function MyApplicationsPage(): JSX.Element {
       render: (row) => <Badge>{row.status as ApplicationStatus}</Badge>,
     },
     {
-      key: 'applicants',
-      header: 'Applicants',
-      render: (row) => (
-        <span className="text-zinc-400">
-          {row.opportunity?._count?.applications ?? '—'}
-        </span>
-      ),
+      key: 'count',
+      header: rowCountHeader(typeFilter),
+      render: (row) => <span className="text-zinc-400">{row.totalCount ?? '—'}</span>,
     },
     {
       key: 'applied',
       header: 'Applied',
-      render: (row) => (
-        <span className="text-zinc-400">{format(new Date(row.createdAt), 'MMM d, yyyy')}</span>
-      ),
+      render: (row) => <span className="text-zinc-400">{format(new Date(row.createdAt), 'MMM d, yyyy')}</span>,
     },
     {
-      key: 'oppStatus',
-      header: 'Opp. Status',
-      render: (row) =>
-        row.opportunity?.status ? (
-          <Badge>{row.opportunity.status}</Badge>
-        ) : (
-          <span className="text-zinc-500">—</span>
-        ),
+      key: 'listingStatus',
+      header: 'Listing Status',
+      render: (row) => (row.listingStatus ? <Badge>{row.listingStatus}</Badge> : <span className="text-zinc-500">—</span>),
     },
     {
       key: 'actions',
@@ -188,8 +239,7 @@ export default function MyApplicationsPage(): JSX.Element {
             className="text-xs text-red-400 hover:text-red-300"
             onClick={(e) => {
               e.stopPropagation();
-              const title = row.opportunity?.title ?? 'this opportunity';
-              setWithdrawTarget({ id: row.id, title });
+              setWithdrawTarget({ id: row.id, title: row.title, type: row.type });
             }}
           >
             Withdraw
@@ -200,27 +250,35 @@ export default function MyApplicationsPage(): JSX.Element {
     },
   ];
 
-  const tableData = filtered.map(
-    (a) => ({ ...a }) as ApplicationWithMeta & Record<string, unknown>,
-  );
+  const tableData = filtered.map((a) => ({ ...a } as UnifiedItem & Record<string, unknown>));
+  const isLoading = applicationsLoading || projectSubmissionsLoading;
 
   return (
     <div className="space-y-8">
       <header>
         <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Student</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          My Applications
-        </h1>
+        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">My Applications</h1>
         <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
-          Track your applications to opportunities. Use filters to narrow results.
+          Track your opportunity applications and project submissions in one place.
         </p>
       </header>
 
       <FilterBar
         searchValue={search}
         onSearchChange={setSearch}
-        searchPlaceholder="Search by opportunity or organization..."
+        searchPlaceholder="Search by title or organization..."
         filters={[
+          {
+            key: 'type',
+            label: 'Type',
+            value: typeFilter,
+            onChange: setTypeFilter,
+            options: [
+              { value: '', label: 'All' },
+              { value: 'OPPORTUNITY', label: 'Opportunity' },
+              { value: 'PROJECT', label: 'Project' },
+            ],
+          },
           {
             key: 'status',
             label: 'Status',
@@ -250,13 +308,13 @@ export default function MyApplicationsPage(): JSX.Element {
       />
 
       {isLoading ? (
-        <TableSkeleton rows={5} cols={7} />
+        <TableSkeleton rows={5} cols={8} />
       ) : filtered.length === 0 ? (
         <EmptyState
-          title={applications.length === 0 ? 'No applications' : 'No matching applications'}
+          title={unifiedList.length === 0 ? 'No applications yet' : 'No matching results'}
           description={
-            applications.length === 0
-              ? "You haven't applied to any opportunities yet."
+            unifiedList.length === 0
+              ? "You haven't applied to any opportunities or projects yet."
               : 'Try adjusting your filters.'
           }
         />
@@ -267,12 +325,20 @@ export default function MyApplicationsPage(): JSX.Element {
       <ConfirmDialog
         open={!!withdrawTarget}
         onClose={() => setWithdrawTarget(null)}
-        onConfirm={() => withdrawTarget && withdrawMutation.mutate(withdrawTarget.id)}
-        title={`Withdraw application to ${withdrawTarget?.title ?? 'this opportunity'}?`}
-        description="This action cannot be undone. You may be able to reapply if the opportunity is still open."
+        onConfirm={() =>
+          withdrawTarget && withdrawMutation.mutate({ id: withdrawTarget.id, type: withdrawTarget.type })
+        }
+        title={`Withdraw from ${withdrawTarget?.title ?? 'this item'}?`}
+        description="This action cannot be undone. You may be able to apply again if the listing is still open."
         confirmLabel="Withdraw"
         loading={withdrawMutation.isPending}
       />
     </div>
   );
+}
+
+function rowCountHeader(typeFilter: string): string {
+  if (typeFilter === 'PROJECT') return 'Submissions';
+  if (typeFilter === 'OPPORTUNITY') return 'Applicants';
+  return 'Applicants/Submissions';
 }

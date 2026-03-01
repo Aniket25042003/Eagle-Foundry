@@ -17,6 +17,8 @@ import startupsRoutes from './modules/startups/startups.routes.js';
 import joinRequestsRoutes from './modules/joinRequests/joinRequests.routes.js';
 import opportunitiesRoutes from './modules/opportunities/opportunities.routes.js';
 import applicationsRoutes from './modules/applications/applications.routes.js';
+import projectsRoutes from './modules/projects/projects.routes.js';
+import projectSubmissionsRoutes from './modules/projectSubmissions/projectSubmissions.routes.js';
 import messagingRoutes from './modules/messaging/messaging.routes.js';
 import notificationsRoutes from './modules/notifications/notifications.routes.js';
 import filesRoutes from './modules/files/files.routes.js';
@@ -27,10 +29,12 @@ import moderationRoutes from './modules/moderation/moderation.routes.js';
 // Import nested route controllers
 import * as joinRequestsController from './modules/joinRequests/joinRequests.controller.js';
 import * as applicationsController from './modules/applications/applications.controller.js';
+import * as projectSubmissionsController from './modules/projectSubmissions/projectSubmissions.controller.js';
 import { validateBody, validateParams, uuidParamSchema } from './middlewares/validate.js';
 import { authMiddleware, requireActiveUser } from './middlewares/auth.js';
 import { requireStudent, requireCompanyMember } from './middlewares/rbac.js';
 import { createJoinRequestSchema } from './modules/joinRequests/joinRequests.validators.js';
+import { createProjectSubmissionSchema } from './modules/projectSubmissions/projectSubmissions.validators.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -100,6 +104,8 @@ app.use('/api/startups', startupsRoutes);
 app.use('/api/join-requests', joinRequestsRoutes);
 app.use('/api/opportunities', opportunitiesRoutes);
 app.use('/api/applications', applicationsRoutes);
+app.use('/api/projects', projectsRoutes);
+app.use('/api/project-submissions', projectSubmissionsRoutes);
 app.use('/api/messages', messagingRoutes);
 app.use('/api/notifications', notificationsRoutes);
 app.use('/api/files', filesRoutes);
@@ -144,6 +150,26 @@ app.get(
     requireCompanyMember,
     validateParams(uuidParamSchema),
     applicationsController.getOpportunityApplications
+);
+
+// Nested routes for projects -> submissions
+app.post(
+    '/api/projects/:id/submissions',
+    authMiddleware,
+    requireActiveUser,
+    requireStudent,
+    validateParams(uuidParamSchema),
+    validateBody(createProjectSubmissionSchema),
+    projectSubmissionsController.createProjectSubmission
+);
+
+app.get(
+    '/api/projects/:id/submissions',
+    authMiddleware,
+    requireActiveUser,
+    requireCompanyMember,
+    validateParams(uuidParamSchema),
+    projectSubmissionsController.getProjectSubmissions
 );
 
 // Setup Sentry error handler (must be before other error handlers)

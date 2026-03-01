@@ -6,6 +6,8 @@ import {
     JoinRequestEventPayload,
     MessageEventPayload,
     OpportunityEventPayload,
+    ProjectEventPayload,
+    ProjectSubmissionEventPayload,
 } from './eventTypes.js';
 
 /**
@@ -290,6 +292,80 @@ export function buildOpportunityPublishedEvent(
             opportunityTitle,
             orgId,
             orgName,
+        },
+    };
+}
+
+/**
+ * Build project published event payload
+ */
+export function buildProjectPublishedEvent(
+    projectId: string,
+    projectTitle: string,
+    orgId: string,
+    orgName: string
+): { type: string; payload: ProjectEventPayload } {
+    return {
+        type: EventType.PROJECT_PUBLISHED,
+        payload: {
+            projectId,
+            projectTitle,
+            orgId,
+            orgName,
+        },
+    };
+}
+
+/**
+ * Build project submission created event payload
+ */
+export function buildProjectSubmissionSubmittedEvent(
+    projectSubmissionId: string,
+    projectId: string,
+    projectTitle: string,
+    applicantId: string,
+    applicantEmail: string,
+    applicantName: string,
+    companyEmail: string
+): { type: string; payload: ProjectSubmissionEventPayload } {
+    return {
+        type: EventType.PROJECT_SUBMISSION_SUBMITTED,
+        payload: {
+            projectSubmissionId,
+            projectId,
+            projectTitle,
+            applicantId,
+            applicantEmail,
+            applicantName,
+            companyEmail,
+        },
+    };
+}
+
+/**
+ * Build project submission status changed event payload
+ */
+export function buildProjectSubmissionStatusChangedEvent(
+    projectSubmissionId: string,
+    projectId: string,
+    projectTitle: string,
+    applicantId: string,
+    applicantEmail: string,
+    applicantName: string,
+    fromStatus: string,
+    toStatus: string
+): { type: string; payload: ProjectSubmissionEventPayload } {
+    return {
+        type: EventType.PROJECT_SUBMISSION_STATUS_CHANGED,
+        payload: {
+            projectSubmissionId,
+            projectId,
+            projectTitle,
+            applicantId,
+            applicantEmail,
+            applicantName,
+            fromStatus,
+            toStatus,
         },
     };
 }

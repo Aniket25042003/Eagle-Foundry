@@ -39,6 +39,7 @@ const companyNav: NavItem[] = [
   { label: 'Organization', to: '/company/org', icon: Building2 },
   { label: 'Members', to: '/company/org/members', icon: Users },
   { label: 'Opportunities', to: '/company/opportunities', icon: Briefcase },
+  { label: 'Projects', to: '/company/projects', icon: FolderKanban },
 ];
 
 const adminNav: NavItem[] = [
@@ -60,6 +61,7 @@ const sharedNav: NavItem[] = [
 const discoveryNav: NavItem[] = [
   { label: 'Startups', to: '/startups', icon: Rocket },
   { label: 'Opportunities', to: '/opportunities', icon: Briefcase },
+  { label: 'Projects', to: '/projects', icon: FolderKanban },
   { label: 'Organizations', to: '/organizations', icon: Building2 },
 ];
 

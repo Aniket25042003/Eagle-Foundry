@@ -39,6 +39,10 @@ const OpportunitiesBoardPage = lazy(() => import('@/pages/company/OpportunitiesB
 const OpportunityEditorPage = lazy(() => import('@/pages/company/OpportunityEditorPage'));
 const OpportunityApplicationsPage = lazy(() => import('@/pages/company/OpportunityApplicationsPage'));
 const ApplicationReviewPage = lazy(() => import('@/pages/company/ApplicationReviewPage'));
+const ProjectsBoardPage = lazy(() => import('@/pages/company/ProjectsBoardPage'));
+const ProjectEditorPage = lazy(() => import('@/pages/company/ProjectEditorPage'));
+const ProjectSubmissionsPage = lazy(() => import('@/pages/company/ProjectSubmissionsPage'));
+const ProjectSubmissionReviewPage = lazy(() => import('@/pages/company/ProjectSubmissionReviewPage'));
 
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const StartupReviewsPage = lazy(() => import('@/pages/admin/StartupReviewsPage'));
@@ -52,6 +56,8 @@ const StartupsDiscoveryPage = lazy(() => import('@/pages/discovery/StartupsPage'
 const StartupDetailPage = lazy(() => import('@/pages/discovery/StartupDetailPage'));
 const OpportunitiesDiscoveryPage = lazy(() => import('@/pages/discovery/OpportunitiesPage'));
 const OpportunityDetailPage = lazy(() => import('@/pages/discovery/OpportunityDetailPage'));
+const ProjectsDiscoveryPage = lazy(() => import('@/pages/discovery/ProjectsPage'));
+const ProjectDetailPage = lazy(() => import('@/pages/discovery/ProjectDetailPage'));
 const OrganizationsDiscoveryPage = lazy(() => import('@/pages/discovery/OrganizationsPage'));
 const OrganizationDetailPage = lazy(() => import('@/pages/discovery/OrganizationDetailPage'));
 const StudentPublicProfilePage = lazy(() => import('@/pages/discovery/StudentPublicProfilePage'));
@@ -153,6 +159,9 @@ export const router = createBrowserRouter([
                       { path: '/company/org', element: <OrgProfilePage /> },
                       { path: '/company/opportunities', element: <OpportunitiesBoardPage /> },
                       { path: '/company/opportunities/:id/applications', element: <OpportunityApplicationsPage /> },
+                      { path: '/company/projects', element: <ProjectsBoardPage /> },
+                      { path: '/company/projects/:id/submissions', element: <ProjectSubmissionsPage /> },
+                      { path: '/company/projects/submissions/:id', element: <ProjectSubmissionReviewPage /> },
                     ],
                   },
                   {
@@ -162,6 +171,8 @@ export const router = createBrowserRouter([
                       { path: '/company/opportunities/new', element: <OpportunityEditorPage /> },
                       { path: '/company/opportunities/:id/edit', element: <OpportunityEditorPage /> },
                       { path: '/company/opportunities/applications/:id', element: <ApplicationReviewPage /> },
+                      { path: '/company/projects/new', element: <ProjectEditorPage /> },
+                      { path: '/company/projects/:id/edit', element: <ProjectEditorPage /> },
                     ],
                   },
 
@@ -184,6 +195,8 @@ export const router = createBrowserRouter([
                   { path: '/startups/:id', element: <StartupDetailPage /> },
                   { path: '/opportunities', element: <OpportunitiesDiscoveryPage /> },
                   { path: '/opportunities/:id', element: <OpportunityDetailPage /> },
+                  { path: '/projects', element: <ProjectsDiscoveryPage /> },
+                  { path: '/projects/:id', element: <ProjectDetailPage /> },
                   { path: '/organizations', element: <OrganizationsDiscoveryPage /> },
                   { path: '/organizations/:id', element: <OrganizationDetailPage /> },
 

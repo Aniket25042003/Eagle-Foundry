@@ -25,6 +25,11 @@ export const EventType = {
     // Opportunity events
     OPPORTUNITY_PUBLISHED: 'opportunity.published',
     OPPORTUNITY_CLOSED: 'opportunity.closed',
+
+    // Project events
+    PROJECT_PUBLISHED: 'project.published',
+    PROJECT_SUBMISSION_SUBMITTED: 'project_submission.submitted',
+    PROJECT_SUBMISSION_STATUS_CHANGED: 'project_submission.status_changed',
 } as const;
 
 export type EventTypeType = (typeof EventType)[keyof typeof EventType];
@@ -85,6 +90,25 @@ export interface OpportunityEventPayload {
     orgName: string;
 }
 
+export interface ProjectEventPayload {
+    projectId: string;
+    projectTitle: string;
+    orgId: string;
+    orgName: string;
+}
+
+export interface ProjectSubmissionEventPayload {
+    projectSubmissionId: string;
+    projectId: string;
+    projectTitle: string;
+    applicantId: string;
+    applicantEmail: string;
+    applicantName: string;
+    companyEmail?: string;
+    fromStatus?: string;
+    toStatus?: string;
+}
+
 // Union type for all event payloads
 export type EventPayload =
     | OtpRequestedPayload
@@ -92,4 +116,6 @@ export type EventPayload =
     | ApplicationEventPayload
     | JoinRequestEventPayload
     | MessageEventPayload
-    | OpportunityEventPayload;
+    | OpportunityEventPayload
+    | ProjectEventPayload
+    | ProjectSubmissionEventPayload;

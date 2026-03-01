@@ -70,6 +70,25 @@ export const endpoints = {
     createApplication: (id: string) => `/api/opportunities/${id}/applications`,
   },
 
+  projects: {
+    list: '/api/projects',
+    detail: (id: string) => `/api/projects/${id}`,
+    create: '/api/projects',
+    update: (id: string) => `/api/projects/${id}`,
+    publish: (id: string) => `/api/projects/${id}/publish`,
+    close: (id: string) => `/api/projects/${id}/close`,
+    orgMe: '/api/projects/org/me',
+    submissions: (id: string) => `/api/projects/${id}/submissions`,
+    createSubmission: (id: string) => `/api/projects/${id}/submissions`,
+  },
+
+  projectSubmissions: {
+    me: '/api/project-submissions/me',
+    detail: (id: string) => `/api/project-submissions/${id}`,
+    withdraw: (id: string) => `/api/project-submissions/${id}/withdraw`,
+    updateStatus: (id: string) => `/api/project-submissions/${id}/status`,
+  },
+
   applications: {
     me: '/api/applications/me',
     detail: (id: string) => `/api/applications/${id}`,

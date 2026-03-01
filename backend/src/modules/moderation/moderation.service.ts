@@ -16,6 +16,9 @@ export async function createReport(userId: string, data: CreateReportInput) {
         case 'OPPORTUNITY':
             targetExists = !!(await db.opportunity.findUnique({ where: { id: data.targetId } }));
             break;
+        case 'PROJECT':
+            targetExists = !!(await db.project.findUnique({ where: { id: data.targetId } }));
+            break;
         case 'USER':
             targetExists = !!(await db.user.findUnique({ where: { id: data.targetId } }));
             break;
@@ -120,6 +123,16 @@ export async function resolveReport(
                 data: { status: 'SUSPENDED' },
             });
         }
+    } else if (data.resolution === 'ORG_SUSPENDED' && report.targetType === 'PROJECT') {
+        const project = await db.project.findUnique({
+            where: { id: report.targetId },
+        });
+        if (project) {
+            await db.org.update({
+                where: { id: project.orgId },
+                data: { status: 'SUSPENDED' },
+            });
+        }
     } else if (data.resolution === 'ORG_SUSPENDED' && report.targetType === 'ORG') {
         await db.org.update({
             where: { id: report.targetId },
@@ -134,6 +147,11 @@ export async function resolveReport(
             });
         } else if (report.targetType === 'OPPORTUNITY') {
             await db.opportunity.update({
+                where: { id: report.targetId },
+                data: { status: 'CLOSED' },
+            });
+        } else if (report.targetType === 'PROJECT') {
+            await db.project.update({
                 where: { id: report.targetId },
                 data: { status: 'CLOSED' },
             });

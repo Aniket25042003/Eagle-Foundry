@@ -56,6 +56,15 @@ export const OpportunityStatus = {
 
 export type OpportunityStatusType = (typeof OpportunityStatus)[keyof typeof OpportunityStatus];
 
+// Project status
+export const ProjectStatus = {
+    DRAFT: 'DRAFT',
+    PUBLISHED: 'PUBLISHED',
+    CLOSED: 'CLOSED',
+} as const;
+
+export type ProjectStatusType = (typeof ProjectStatus)[keyof typeof ProjectStatus];
+
 // Application status
 export const ApplicationStatus = {
     SUBMITTED: 'SUBMITTED',
@@ -136,6 +145,7 @@ export const ALLOWED_FILE_TYPES = {
 export const ReportTargetType = {
     STARTUP: 'startup',
     OPPORTUNITY: 'opportunity',
+    PROJECT: 'project',
     USER: 'user',
     MESSAGE: 'message',
 } as const;
@@ -181,6 +191,9 @@ export const NotificationType = {
     JOIN_REQUEST_REJECTED: 'join_request_rejected',
     APPLICATION_RECEIVED: 'application_received',
     APPLICATION_STATUS_CHANGED: 'application_status_changed',
+    PROJECT_PUBLISHED: 'project_published',
+    PROJECT_SUBMISSION_RECEIVED: 'project_submission_received',
+    PROJECT_SUBMISSION_STATUS_CHANGED: 'project_submission_status_changed',
     NEW_MESSAGE: 'new_message',
     SECURITY_NEW_LOGIN: 'security_new_login',
     SECURITY_MFA_ENABLED: 'security_mfa_enabled',

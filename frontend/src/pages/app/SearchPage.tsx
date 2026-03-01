@@ -11,11 +11,12 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { TableSkeleton } from '@/components/ui/skeleton';
 import { useDebounce } from '@/hooks/useDebounce';
 
-const SEARCH_TABS = ['All', 'Startups', 'Opportunities', 'Students', 'Organizations'] as const;
+const SEARCH_TABS = ['All', 'Startups', 'Opportunities', 'Projects', 'Students', 'Organizations'] as const;
 const TYPE_MAP: Record<string, string> = {
   All: 'all',
   Startups: 'startups',
   Opportunities: 'opportunities',
+  Projects: 'projects',
   Students: 'students',
   Organizations: 'orgs',
 };
@@ -24,6 +25,7 @@ interface SearchResponse {
   data?: {
     startups?: SearchResult[];
     opportunities?: SearchResult[];
+    projects?: SearchResult[];
     students?: SearchResult[];
     orgs?: SearchResult[];
     organizations?: SearchResult[];
@@ -36,6 +38,8 @@ function getDetailPath(item: SearchResult): string {
       return `/startups/${item.id}`;
     case 'opportunity':
       return `/opportunities/${item.id}`;
+    case 'project':
+      return `/projects/${item.id}`;
     case 'student':
       return `/students/${item.id}`;
     case 'organization':
@@ -66,12 +70,14 @@ export default function SearchPage(): JSX.Element {
   const body = data?.data ?? data;
   const startups = (body as Record<string, unknown>)?.startups ?? [];
   const opportunities = (body as Record<string, unknown>)?.opportunities ?? [];
+  const projects = (body as Record<string, unknown>)?.projects ?? [];
   const students = (body as Record<string, unknown>)?.students ?? [];
   const orgs = (body as Record<string, unknown>)?.orgs ?? (body as Record<string, unknown>)?.organizations ?? [];
 
   const allResults: SearchResult[] = [
     ...(Array.isArray(startups) ? startups : []),
     ...(Array.isArray(opportunities) ? opportunities : []),
+    ...(Array.isArray(projects) ? projects : []),
     ...(Array.isArray(students) ? students : []),
     ...(Array.isArray(orgs) ? orgs : []),
   ];
@@ -86,7 +92,7 @@ export default function SearchPage(): JSX.Element {
           Search
         </h1>
         <p className="mt-3 max-w-2xl text-sm text-zinc-400">
-          Search across startups, opportunities, students, and organizations.
+          Search across startups, opportunities, projects, students, and organizations.
         </p>
       </header>
 
@@ -107,7 +113,7 @@ export default function SearchPage(): JSX.Element {
       ) : !hasSearched ? (
         <EmptyState
           title="Start searching"
-          description="Enter a query to find startups, opportunities, students, or organizations."
+          description="Enter a query to find startups, opportunities, projects, students, or organizations."
         />
       ) : !hasResults ? (
         <EmptyState
@@ -150,6 +156,31 @@ export default function SearchPage(): JSX.Element {
                 {(Array.isArray(opportunities) ? opportunities : []).map((item: SearchResult) => (
                   <div
                     key={`opportunity-${item.id}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate(getDetailPath(item))}
+                    onKeyDown={(e) => e.key === 'Enter' && navigate(getDetailPath(item))}
+                  >
+                    <Card interactive className="cursor-pointer">
+                      <p className="font-medium text-zinc-200">{item.title}</p>
+                      {item.subtitle && (
+                        <p className="mt-1 text-sm text-zinc-500">{item.subtitle}</p>
+                      )}
+                    </Card>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+          {(activeTab === 'All' || activeTab === 'Projects') && (Array.isArray(projects) ? projects : []).length > 0 && (
+            <section>
+              <h2 className="mb-3 text-sm font-medium uppercase tracking-wider text-zinc-500">
+                Projects
+              </h2>
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {(Array.isArray(projects) ? projects : []).map((item: SearchResult) => (
+                  <div
+                    key={`project-${item.id}`}
                     role="button"
                     tabIndex={0}
                     onClick={() => navigate(getDetailPath(item))}
