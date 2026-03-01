@@ -55,7 +55,7 @@ export default function PrivacyPage(): JSX.Element {
             <Button withBorderEffect={false} onClick={() => navigate('/contact')}>
               Contact Us
             </Button>
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
               Back
             </Button>
           </div>

@@ -61,7 +61,7 @@ export default function ContactPage(): JSX.Element {
             <Button withBorderEffect={false} onClick={() => window.location.href = 'mailto:contact@eagle-foundry.example'}>
               Email Us
             </Button>
-            <Button variant="ghost" onClick={() => navigate(-1)}>
+            <Button variant="ghost" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}>
               Back
             </Button>
           </div>
