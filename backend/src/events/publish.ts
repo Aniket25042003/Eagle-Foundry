@@ -2,8 +2,16 @@ import { publishEvent } from '../connectors/sqs.js';
 import { logger } from '../connectors/logger.js';
 import { EventPayload } from './eventTypes.js';
 
+const CRITICAL_EVENT_PREFIXES = ['email.'];
+
+function isCriticalEvent(type: string): boolean {
+    return CRITICAL_EVENT_PREFIXES.some((prefix) => type.startsWith(prefix));
+}
+
 /**
- * Publish an event to SQS for async processing
+ * Publish an event to SQS for async processing.
+ * Critical events (e.g. email.*) will throw on failure so callers
+ * can surface the error. Non-critical events are best-effort.
  */
 export async function publish<T extends EventPayload>(
     type: string,
@@ -15,8 +23,11 @@ export async function publish<T extends EventPayload>(
         return eventId;
     } catch (error) {
         logger.error({ type, error }, 'Failed to publish event');
-        // Don't throw - event publishing is best-effort
-        // The main operation should still succeed
+
+        if (isCriticalEvent(type)) {
+            throw error;
+        }
+
         return '';
     }
 }

@@ -3,16 +3,26 @@ import { v4 as uuidv4 } from 'uuid';
 import { env } from '../config/env.js';
 import { logger } from './logger.js';
 
+const hasExplicitCredentials = !!(env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY);
+
 const sqsClient = new SQSClient({
     region: env.AWS_REGION,
-    ...(env.AWS_ACCESS_KEY_ID &&
-        env.AWS_SECRET_ACCESS_KEY && {
+    ...(hasExplicitCredentials && {
         credentials: {
-            accessKeyId: env.AWS_ACCESS_KEY_ID,
-            secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+            accessKeyId: env.AWS_ACCESS_KEY_ID!,
+            secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
         },
     }),
 });
+
+logger.info(
+    {
+        region: env.AWS_REGION,
+        queueUrl: env.SQS_EVENTS_QUEUE_URL,
+        credentialSource: hasExplicitCredentials ? 'explicit' : 'default-chain',
+    },
+    'SQS client initialized'
+);
 
 export interface EventEnvelope<T = unknown> {
     eventId: string;
@@ -58,9 +68,20 @@ export async function publishEvent<T>(
             'Event published to SQS'
         );
         return eventId;
-    } catch (error) {
-        logger.error({ eventId, type, error }, 'Failed to publish event to SQS');
-        throw error;
+    } catch (err: unknown) {
+        const errObj = err instanceof Error ? err : new Error(String(err));
+        logger.error(
+            {
+                eventId,
+                type,
+                queueUrl: env.SQS_EVENTS_QUEUE_URL,
+                region: env.AWS_REGION,
+                errorName: errObj.name,
+                errorMessage: errObj.message,
+            },
+            'Failed to publish event to SQS'
+        );
+        throw errObj;
     }
 }
 
