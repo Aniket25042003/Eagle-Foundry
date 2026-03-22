@@ -45,3 +45,4 @@ resend.webp
 *.tsbuildinfo
 *.md
 !README.md
+!docs/*.md
