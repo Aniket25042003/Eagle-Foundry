@@ -75,7 +75,12 @@ const UnauthorizedPage = lazy(() => import('@/pages/system/UnauthorizedPage'));
 const DocsPage = lazy(() => import('@/pages/system/DocsPage'));
 const PrivacyPage = lazy(() => import('@/pages/system/PrivacyPage'));
 const TermsPage = lazy(() => import('@/pages/system/TermsPage'));
-const ContactPage = lazy(() => import('@/pages/system/ContactPage'));
+
+const ContactPage     = lazy(() => import('@/pages/public/ContactPage'));
+const HowItWorksPage  = lazy(() => import('@/pages/public/HowItWorksPage'));
+const ForStudentsPage = lazy(() => import('@/pages/public/ForStudentsPage'));
+const ForCompaniesPage = lazy(() => import('@/pages/public/ForCompaniesPage'));
+const FundingPage     = lazy(() => import('@/pages/public/FundingPage'));
 
 function RootLayout(): JSX.Element {
   return (
@@ -92,12 +97,16 @@ export const router = createBrowserRouter([
     element: <RootLayout />,
     children: [
       // Public
-      { path: '/', element: <LandingPage /> },
-      { path: '/unauthorized', element: <UnauthorizedPage /> },
-      { path: '/docs', element: <DocsPage /> },
-      { path: '/privacy', element: <PrivacyPage /> },
-      { path: '/terms', element: <TermsPage /> },
-      { path: '/contact', element: <ContactPage /> },
+      { path: '/',               element: <LandingPage /> },
+      { path: '/how-it-works',   element: <HowItWorksPage /> },
+      { path: '/for-students',   element: <ForStudentsPage /> },
+      { path: '/for-companies',  element: <ForCompaniesPage /> },
+      { path: '/funding',        element: <FundingPage /> },
+      { path: '/contact',        element: <ContactPage /> },
+      { path: '/unauthorized',   element: <UnauthorizedPage /> },
+      { path: '/docs',           element: <DocsPage /> },
+      { path: '/privacy',        element: <PrivacyPage /> },
+      { path: '/terms',          element: <TermsPage /> },
 
       // Guest-only (auth pages)
       {
