@@ -1,17 +1,11 @@
-import { type KeyboardEvent, type PointerEvent, useCallback, useRef, useState } from 'react';
+import { type KeyboardEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, MessageSquare, Building2, GraduationCap, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PublicNavbar from '@/components/public/PublicNavbar';
-
-function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
-      {children}
-    </section>
-  );
-}
+import SectionShell from '@/components/public/SectionShell';
+import useCardSpotlight from '@/components/public/useCardSpotlight';
 
 const reasons = [
   { icon: GraduationCap, title: "I'm a student", description: 'Questions about joining, launching a project, or getting funded.' },
@@ -20,24 +14,12 @@ const reasons = [
 ];
 
 export default function ContactPage(): JSX.Element {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<HTMLElement[] | null>(null);
+  const { rootRef, handlePointerMove } = useCardSpotlight();
 
   const [formState, setFormState] = useState({
     name: '', email: '', subject: '', message: '', type: '',
   });
   const [submitted, setSubmitted] = useState(false);
-
-  const handlePointerMove = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (!cardsRef.current && rootRef.current) {
-      cardsRef.current = Array.from(rootRef.current.querySelectorAll<HTMLElement>('.ef-card'));
-    }
-    (cardsRef.current ?? []).forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${event.clientX - rect.left}`);
-      card.style.setProperty('--y', `${event.clientY - rect.top}`);
-    });
-  }, []);
 
   const handleSubmit = () => {
     const { name, email, subject, message, type } = formState;
@@ -216,8 +198,9 @@ export default function ContactPage(): JSX.Element {
                     </div>
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs text-zinc-400">Subject</label>
+                    <label htmlFor="contact-subject" className="mb-1.5 block text-xs text-zinc-400">Subject</label>
                     <input
+                      id="contact-subject"
                       className={inputClass}
                       placeholder="How can we help?"
                       value={formState.subject}
@@ -225,8 +208,9 @@ export default function ContactPage(): JSX.Element {
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs text-zinc-400">Message</label>
+                    <label htmlFor="contact-message" className="mb-1.5 block text-xs text-zinc-400">Message</label>
                     <textarea
+                      id="contact-message"
                       className={`${inputClass} h-36 resize-none`}
                       placeholder="Tell us more..."
                       value={formState.message}

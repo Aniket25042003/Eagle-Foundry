@@ -1,4 +1,3 @@
-import { type PointerEvent, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -6,14 +5,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PublicNavbar from '@/components/public/PublicNavbar';
-
-function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
-      {children}
-    </section>
-  );
-}
+import SectionShell from '@/components/public/SectionShell';
+import useCardSpotlight from '@/components/public/useCardSpotlight';
 
 const fundingTypes = [
   {
@@ -57,20 +50,8 @@ const process = [
 ];
 
 export default function FundingPage(): JSX.Element {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<HTMLElement[] | null>(null);
+  const { rootRef, handlePointerMove } = useCardSpotlight();
   const navigate = useNavigate();
-
-  const handlePointerMove = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (!cardsRef.current && rootRef.current) {
-      cardsRef.current = Array.from(rootRef.current.querySelectorAll<HTMLElement>('.ef-card'));
-    }
-    (cardsRef.current ?? []).forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${event.clientX - rect.left}`);
-      card.style.setProperty('--y', `${event.clientY - rect.top}`);
-    });
-  }, []);
 
   return (
     <main ref={rootRef} onPointerMove={handlePointerMove} className="relative overflow-hidden bg-black text-white">
@@ -115,7 +96,7 @@ export default function FundingPage(): JSX.Element {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="glass-card grid grid-cols-2 divide-x divide-white/10 rounded-2xl md:grid-cols-4"
+            className="glass-card grid grid-cols-2 divide-y divide-white/10 rounded-2xl md:grid-cols-4 md:divide-x md:divide-y-0"
           >
             {[
               { value: '€4.2M', label: 'Total raised' },

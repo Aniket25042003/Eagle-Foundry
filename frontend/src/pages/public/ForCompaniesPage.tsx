@@ -1,4 +1,3 @@
-import { type PointerEvent, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -6,14 +5,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PublicNavbar from '@/components/public/PublicNavbar';
-
-function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
-      {children}
-    </section>
-  );
-}
+import SectionShell from '@/components/public/SectionShell';
+import useCardSpotlight from '@/components/public/useCardSpotlight';
 
 const useCases = [
   {
@@ -76,20 +69,8 @@ const tiers = [
 ];
 
 export default function ForCompaniesPage(): JSX.Element {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<HTMLElement[] | null>(null);
+  const { rootRef, handlePointerMove } = useCardSpotlight();
   const navigate = useNavigate();
-
-  const handlePointerMove = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (!cardsRef.current && rootRef.current) {
-      cardsRef.current = Array.from(rootRef.current.querySelectorAll<HTMLElement>('.ef-card'));
-    }
-    (cardsRef.current ?? []).forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${event.clientX - rect.left}`);
-      card.style.setProperty('--y', `${event.clientY - rect.top}`);
-    });
-  }, []);
 
   return (
     <main ref={rootRef} onPointerMove={handlePointerMove} className="relative overflow-hidden bg-black text-white">
@@ -119,7 +100,7 @@ export default function ForCompaniesPage(): JSX.Element {
               before they hit the open market.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button withBorderEffect={false} className="gap-2 px-6" onClick={() => navigate('/sign-up')}>
+              <Button withBorderEffect={false} className="gap-2 px-6" onClick={() => navigate('/sign-up/company')}>
                 Register your company <ArrowRight size={14} />
               </Button>
               <Button variant="ghost" onClick={() => navigate('/contact')}>Talk to our team</Button>
@@ -207,7 +188,7 @@ export default function ForCompaniesPage(): JSX.Element {
                   withBorderEffect={false}
                   variant={tier.highlight ? undefined : 'ghost'}
                   className="w-full justify-center gap-2"
-                  onClick={() => navigate(tier.price === 'Custom' ? '/contact' : '/sign-up')}
+                  onClick={() => navigate(tier.price === 'Custom' ? '/contact' : '/sign-up/company')}
                 >
                   {tier.cta} <ArrowRight size={13} />
                 </Button>
@@ -226,7 +207,7 @@ export default function ForCompaniesPage(): JSX.Element {
           >
             <h2 className="ef-heading-gradient mb-4 text-4xl font-semibold">Ready to find your next hire?</h2>
             <p className="mb-8 text-sm text-zinc-400">Join 120+ companies already using Eagle-Foundry.</p>
-            <Button withBorderEffect={false} className="gap-2 px-8" onClick={() => navigate('/sign-up')}>
+            <Button withBorderEffect={false} className="gap-2 px-8" onClick={() => navigate('/sign-up/company')}>
               Register your company <ArrowRight size={14} />
             </Button>
           </motion.div>

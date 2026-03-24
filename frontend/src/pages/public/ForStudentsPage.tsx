@@ -1,4 +1,3 @@
-import { type PointerEvent, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -6,14 +5,8 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PublicNavbar from '@/components/public/PublicNavbar';
-
-function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
-      {children}
-    </section>
-  );
-}
+import SectionShell from '@/components/public/SectionShell';
+import useCardSpotlight from '@/components/public/useCardSpotlight';
 
 const features = [
   {
@@ -56,20 +49,8 @@ const stats = [
 ];
 
 export default function ForStudentsPage(): JSX.Element {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<HTMLElement[] | null>(null);
+  const { rootRef, handlePointerMove } = useCardSpotlight();
   const navigate = useNavigate();
-
-  const handlePointerMove = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (!cardsRef.current && rootRef.current) {
-      cardsRef.current = Array.from(rootRef.current.querySelectorAll<HTMLElement>('.ef-card'));
-    }
-    (cardsRef.current ?? []).forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${event.clientX - rect.left}`);
-      card.style.setProperty('--y', `${event.clientY - rect.top}`);
-    });
-  }, []);
 
   return (
     <main ref={rootRef} onPointerMove={handlePointerMove} className="relative overflow-hidden bg-black text-white">
@@ -99,7 +80,7 @@ export default function ForStudentsPage(): JSX.Element {
                 into real companies — without waiting to graduate.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button withBorderEffect={false} className="gap-2 px-6" onClick={() => navigate('/sign-up')}>
+                <Button withBorderEffect={false} className="gap-2 px-6" onClick={() => navigate('/sign-up/student')}>
                   Join as a student <ArrowRight size={14} />
                 </Button>
                 <Button variant="ghost" onClick={() => navigate('/how-it-works')}>See how it works</Button>
@@ -218,7 +199,7 @@ export default function ForStudentsPage(): JSX.Element {
           >
             <h2 className="ef-heading-gradient mb-4 text-4xl font-semibold">Start building today.</h2>
             <p className="mb-8 text-sm text-zinc-400">Free to join. No approval needed to create your profile.</p>
-            <Button withBorderEffect={false} className="gap-2 px-8 py-3" onClick={() => navigate('/sign-up')}>
+            <Button withBorderEffect={false} className="gap-2 px-8 py-3" onClick={() => navigate('/sign-up/student')}>
               Create your student profile <ArrowRight size={14} />
             </Button>
           </motion.div>

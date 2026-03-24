@@ -1,18 +1,10 @@
-import { type PointerEvent, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, UserPlus, Lightbulb, Users, TrendingUp, Building2, Search, Handshake, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PublicNavbar from '@/components/public/PublicNavbar';
-
-// ─── Shared shell (mirrors SectionShell pattern) ────────────────────────────
-function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return (
-    <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
-      {children}
-    </section>
-  );
-}
+import SectionShell from '@/components/public/SectionShell';
+import useCardSpotlight from '@/components/public/useCardSpotlight';
 
 // ─── Step card ────────────────────────────────────────────────────────────────
 function StepCard({
@@ -79,20 +71,8 @@ function Track({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function HowItWorksPage(): JSX.Element {
-  const rootRef = useRef<HTMLElement | null>(null);
-  const cardsRef = useRef<HTMLElement[] | null>(null);
+  const { rootRef, handlePointerMove } = useCardSpotlight();
   const navigate = useNavigate();
-
-  const handlePointerMove = useCallback((event: PointerEvent<HTMLElement>) => {
-    if (!cardsRef.current && rootRef.current) {
-      cardsRef.current = Array.from(rootRef.current.querySelectorAll<HTMLElement>('.ef-card'));
-    }
-    (cardsRef.current ?? []).forEach((card) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--x', `${event.clientX - rect.left}`);
-      card.style.setProperty('--y', `${event.clientY - rect.top}`);
-    });
-  }, []);
 
   const studentSteps = [
     { icon: UserPlus, title: 'Create your profile', description: 'Sign up as a student and build your profile showcasing your skills, university, and interests.' },
