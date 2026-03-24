@@ -1,47 +1,15 @@
-import { type PointerEvent, useCallback, useRef, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { type KeyboardEvent, type PointerEvent, useCallback, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Mail, MessageSquare, Building2, GraduationCap, Send } from 'lucide-react';
+import { Mail, MessageSquare, Building2, GraduationCap, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import PublicNavbar from '@/components/public/PublicNavbar';
 
 function SectionShell({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <section className={`mx-auto w-full max-w-6xl px-6 py-20 md:px-10 ${className}`}>
       {children}
     </section>
-  );
-}
-
-function Navbar() {
-  const navigate = useNavigate();
-  const navLinks = [
-    { label: 'How It Works', href: '/how-it-works' },
-    { label: 'For Students', href: '/for-students' },
-    { label: 'For Companies', href: '/for-companies' },
-    { label: 'Funding', href: '/funding' },
-    { label: 'Contact', href: '/contact' },
-  ];
-  return (
-    <header className="flex items-center justify-between gap-4 px-6 pt-8 md:px-10">
-      <Link to="/" className="inline-flex items-center gap-3">
-        <picture>
-          <source media="(prefers-color-scheme: light)" srcSet="/assets/brand/logo-light-512.png" />
-          <img src="/assets/brand/logo-dark-512.png" alt="Eagle-Foundry" className="h-8 w-8 rounded-full object-cover" />
-        </picture>
-        <span className="text-sm font-semibold tracking-wide text-zinc-100">Eagle-Foundry</span>
-      </Link>
-      <nav className="hidden items-center gap-7 text-xs text-zinc-300 md:flex">
-        {navLinks.map((item) => (
-          <Link key={item.href} to={item.href} className="transition-colors hover:text-white">{item.label}</Link>
-        ))}
-      </nav>
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" className="hidden md:inline-flex" onClick={() => navigate('/login')}>Sign In</Button>
-        <Button withBorderEffect={false} className="gap-2" onClick={() => navigate('/sign-up')}>
-          Get Started <ArrowRight size={14} />
-        </Button>
-      </div>
-    </header>
   );
 }
 
@@ -88,6 +56,17 @@ export default function ContactPage(): JSX.Element {
     setSubmitted(true);
   };
 
+  const selectReason = (title: string) => {
+    setFormState((s) => ({ ...s, type: title }));
+  };
+
+  const handleReasonKeyDown = (event: KeyboardEvent<HTMLButtonElement>, title: string) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectReason(title);
+    }
+  };
+
   const inputClass =
     'w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 outline-none transition-colors focus:border-white/25 focus:bg-white/8';
 
@@ -98,7 +77,7 @@ export default function ContactPage(): JSX.Element {
       <div className="pointer-events-none absolute left-[-20rem] top-[30rem] h-[35rem] w-[35rem] rounded-full bg-blue-500/15 blur-[180px]" />
 
       <div className="relative z-10">
-        <Navbar />
+        <PublicNavbar />
 
         {/* Hero */}
         <SectionShell className="pb-8 pt-16 text-center">
@@ -125,12 +104,15 @@ export default function ContactPage(): JSX.Element {
         <SectionShell className="pt-4 pb-10">
           <div className="grid gap-4 md:grid-cols-3">
             {reasons.map((reason, i) => (
-              <motion.div
+              <motion.button
                 key={reason.title}
+                type="button"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.1 + i * 0.08 }}
-                onClick={() => setFormState((s) => ({ ...s, type: reason.title }))}
+                onClick={() => selectReason(reason.title)}
+                onKeyDown={(event) => handleReasonKeyDown(event, reason.title)}
+                aria-pressed={formState.type === reason.title}
                 className={`ef-card glass-card cursor-pointer rounded-2xl p-6 transition-colors ${formState.type === reason.title ? 'border-white/25' : ''}`}
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5">
@@ -138,7 +120,7 @@ export default function ContactPage(): JSX.Element {
                 </div>
                 <h3 className="mb-1 text-sm font-semibold text-zinc-100">{reason.title}</h3>
                 <p className="text-xs leading-relaxed text-zinc-400">{reason.description}</p>
-              </motion.div>
+              </motion.button>
             ))}
           </div>
         </SectionShell>
@@ -205,15 +187,16 @@ export default function ContactPage(): JSX.Element {
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-white/10 bg-white/5">
                     <Send size={22} className="text-zinc-200" />
                   </div>
-                  <h3 className="mb-2 text-lg font-semibold text-zinc-100">Message sent!</h3>
-                  <p className="text-sm text-zinc-400">We'll get back to you within 1–2 business days.</p>
+                  <h3 className="mb-2 text-lg font-semibold text-zinc-100">Email client opened</h3>
+                  <p className="text-sm text-zinc-400">Your email client has been opened. Please complete sending in your email app.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
-                      <label className="mb-1.5 block text-xs text-zinc-400">Name</label>
+                      <label htmlFor="contact-name" className="mb-1.5 block text-xs text-zinc-400">Name</label>
                       <input
+                        id="contact-name"
                         className={inputClass}
                         placeholder="Your name"
                         value={formState.name}
@@ -221,8 +204,9 @@ export default function ContactPage(): JSX.Element {
                       />
                     </div>
                     <div>
-                      <label className="mb-1.5 block text-xs text-zinc-400">Email</label>
+                      <label htmlFor="contact-email" className="mb-1.5 block text-xs text-zinc-400">Email</label>
                       <input
+                        id="contact-email"
                         className={inputClass}
                         type="email"
                         placeholder="you@example.com"
