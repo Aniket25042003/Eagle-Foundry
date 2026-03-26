@@ -61,9 +61,16 @@ export function HeroSection(): JSX.Element {
 
           <nav className="hidden items-center gap-7 text-xs text-zinc-300 md:flex">
             {navItems.map((item) => (
-              <a key={item} href={`#${item.toLowerCase().replace(/\s+/g, '-')}`} className="transition-colors hover:text-white">
+              <Link
+                key={item}
+                to={(() => {
+                  const slug = item.toLowerCase().replace(/\s+/g, '-');
+                  return slug === 'contact' ? '/contact' : `/${slug}`;
+                })()}
+                className="transition-colors hover:text-white"
+              >
                 {item}
-              </a>
+              </Link>
             ))}
           </nav>
 
