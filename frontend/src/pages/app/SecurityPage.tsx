@@ -96,11 +96,13 @@ export default function SecurityPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Settings</p>
-        <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
-          Security
-        </h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Settings</p>
+        <div className="mt-2 flex flex-wrap items-center gap-3">
+          <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">
+            Security
+          </h1>
+        </div>
+        <p className="mt-3 max-w-3xl text-sm text-[var(--muted)] md:text-base">
           Manage two-factor authentication, backup codes, and active sessions.
         </p>
       </header>
@@ -112,15 +114,15 @@ export default function SecurityPage(): JSX.Element {
         </CardHeader>
 
         {mfaLoading ? (
-          <div className="h-16 animate-pulse rounded-xl bg-white/5" />
+          <div className="h-16 animate-pulse rounded-xl bg-[var(--muted)]" />
         ) : (
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <Badge>{mfaStatus?.mfaEnabled ? 'Enabled' : 'Pending setup'}</Badge>
               </div>
-              <p className="text-sm text-zinc-400">
-                Backup codes remaining: <span className="text-zinc-200">{mfaStatus?.backupCodesRemaining ?? 0}</span>
+              <p className="text-sm text-[var(--muted)]">
+                Backup codes remaining: <span className="text-[var(--foreground)]">{mfaStatus?.backupCodesRemaining ?? 0}</span>
               </p>
             </div>
 
@@ -151,11 +153,11 @@ export default function SecurityPage(): JSX.Element {
         {sessionsLoading ? (
           <TableSkeleton rows={5} cols={4} />
         ) : sessions.length === 0 ? (
-          <p className="text-sm text-zinc-500">No active sessions found.</p>
+          <p className="text-sm text-[var(--muted)]">No active sessions found.</p>
         ) : (
-          <div className="overflow-hidden rounded-2xl border border-white/10">
+          <div className="overflow-hidden rounded-2xl border border-[var(--border)]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-white/[0.03] text-xs uppercase tracking-[0.12em] text-zinc-500">
+              <thead className="bg-[var(--background)] text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
                 <tr>
                   <th className="px-4 py-3">Device</th>
                   <th className="px-4 py-3">Last Used</th>
@@ -165,15 +167,15 @@ export default function SecurityPage(): JSX.Element {
               </thead>
               <tbody>
                 {sessions.map((session) => (
-                  <tr key={session.id} className="border-t border-white/10 text-zinc-200">
+                  <tr key={session.id} className="border-t border-[var(--border)] text-[var(--foreground)]">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <span>{session.userAgent || 'Unknown device'}</span>
                         {session.isCurrent && <Badge>Current</Badge>}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-zinc-400">{new Date(session.lastUsedAt).toLocaleString()}</td>
-                    <td className="px-4 py-3 text-zinc-400">{new Date(session.expiresAt).toLocaleString()}</td>
+                    <td className="px-4 py-3 text-[var(--muted)]">{new Date(session.lastUsedAt).toLocaleString()}</td>
+                    <td className="px-4 py-3 text-[var(--muted)]">{new Date(session.expiresAt).toLocaleString()}</td>
                     <td className="px-4 py-3 text-right">
                       <Button
                         variant="ghost"
@@ -202,7 +204,7 @@ export default function SecurityPage(): JSX.Element {
         title="Regenerate backup codes"
       >
         <div className="space-y-4">
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-[var(--muted)]">
             Enter a current authenticator code to generate new backup codes. Existing backup codes will be invalidated.
           </p>
 
@@ -216,9 +218,9 @@ export default function SecurityPage(): JSX.Element {
           />
 
           {latestBackupCodes.length > 0 && (
-            <div className="grid grid-cols-2 gap-2 rounded-xl border border-white/10 bg-black/45 p-3 text-xs text-zinc-100">
+            <div className="grid grid-cols-2 gap-2 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 text-xs text-[var(--foreground)]">
               {latestBackupCodes.map((code) => (
-                <code key={code} className="rounded bg-white/5 px-2 py-1">{code}</code>
+                <code key={code} className="rounded bg-[var(--muted)] px-2 py-1">{code}</code>
               ))}
             </div>
           )}
