@@ -42,7 +42,7 @@ export default function ProjectsBoardPage(): JSX.Element {
     {
       key: 'title',
       header: 'Title',
-      render: (row) => <span className="font-medium text-zinc-200">{row.title}</span>,
+      render: (row) => <span className="font-medium text-[var(--foreground)]">{row.title}</span>,
     },
     {
       key: 'budgetType',
@@ -52,7 +52,7 @@ export default function ProjectsBoardPage(): JSX.Element {
     {
       key: 'submissions',
       header: 'Submissions',
-      render: (row) => <span className="text-zinc-400">{row._count?.submissions ?? 0}</span>,
+      render: (row) => <span className="text-[var(--muted)]">{row._count?.submissions ?? 0}</span>,
     },
     {
       key: 'status',
@@ -62,7 +62,7 @@ export default function ProjectsBoardPage(): JSX.Element {
     {
       key: 'actions',
       header: 'Actions',
-      render: () => <span className="text-xs text-zinc-500">View / Edit</span>,
+      render: () => <span className="text-xs text-[var(--muted)]">View / Edit</span>,
     },
   ];
 
@@ -71,14 +71,14 @@ export default function ProjectsBoardPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Company</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Company</p>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
           <h1 className="ef-heading-gradient text-4xl font-semibold leading-tight md:text-5xl">Company Projects</h1>
           <Button variant="primary" withBorderEffect={false} onClick={() => navigate('/company/projects/new')}>
             New Project
           </Button>
         </div>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="mt-3 max-w-3xl text-sm text-[var(--foreground)] md:text-base">
           Create and manage outsourced projects for students.
         </p>
       </header>
@@ -104,7 +104,7 @@ export default function ProjectsBoardPage(): JSX.Element {
       />
 
       {isLoading ? (
-        <div className="h-64 animate-pulse rounded-2xl bg-white/5" />
+        <div className="h-64 animate-pulse rounded-2xl bg-[var(--elements)]" />
       ) : projects.length === 0 ? (
         <EmptyState
           title="No projects"

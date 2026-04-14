@@ -57,7 +57,7 @@ export default function OpportunityApplicationsPage(): JSX.Element {
         return profileId ? (
           <button
             type="button"
-            className="text-zinc-300 underline underline-offset-2 hover:text-white"
+            className="text-[var(--foreground)] underline underline-offset-2 hover:text-[var(--foreground)]"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/students/${profileId}`);
@@ -66,7 +66,7 @@ export default function OpportunityApplicationsPage(): JSX.Element {
             {name}
           </button>
         ) : (
-          <span className="text-zinc-400">{name}</span>
+          <span className="text-[var(--muted)]">{name}</span>
         );
       },
     },
@@ -76,7 +76,7 @@ export default function OpportunityApplicationsPage(): JSX.Element {
       render: (row) => {
         const d = row.createdAt ? new Date(row.createdAt) : null;
         return (
-          <span className="text-zinc-400">
+          <span className="text-[var(--muted)]">
             {d && !isNaN(d.getTime()) ? format(d, 'MMM d, yyyy') : '—'}
           </span>
         );
@@ -93,7 +93,7 @@ export default function OpportunityApplicationsPage(): JSX.Element {
       render: (row) => (
         <button
           type="button"
-          className="text-xs text-zinc-300 underline underline-offset-2 hover:text-white"
+          className="text-xs text-[var(--foreground)] underline underline-offset-2 hover:text-[var(--foreground)]"
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/company/opportunities/applications/${row.id}`);
@@ -110,11 +110,11 @@ export default function OpportunityApplicationsPage(): JSX.Element {
   return (
     <div className="space-y-8">
       <header>
-        <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Company</p>
+        <p className="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Company</p>
         <h1 className="ef-heading-gradient mt-2 text-4xl font-semibold leading-tight md:text-5xl">
           Applications
         </h1>
-        <p className="mt-3 max-w-3xl text-sm text-zinc-300 md:text-base">
+        <p className="mt-3 max-w-3xl text-sm text-[var(--foreground)] md:text-base">
           {opportunity?.title ? `Applications for ${opportunity.title}` : 'Loading...'}
         </p>
       </header>
