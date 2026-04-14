@@ -20,18 +20,18 @@ export function ControlSection(): JSX.Element {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.7 }}
-        className="ef-card mt-10 rounded-2xl border border-white/15 bg-zinc-950"
+        className="ef-card mt-10 rounded-2xl border border-[var(--border)] bg-[var(--elements)]"
       >
-        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 text-xs text-zinc-400">
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 text-xs text-[var(--foreground)]">
           <span>Platform analytics · Monthly venture activity</span>
           <span>Updated 2m ago</span>
         </div>
         <div className="h-[340px] p-6">
-          <div className="ef-card ef-card-soft flex h-full items-end justify-between gap-2 rounded-xl border border-white/10 bg-black/45 p-4">
+          <div className="ef-card ef-card-soft flex h-full items-end justify-between gap-2 rounded-xl border border-white/10 bg-white dark:bg-black/45 p-4">
             {bars.map((height, index) => (
               <div key={index} className="flex h-full items-end">
                 <div
-                  className="w-3 rounded-t-md bg-gradient-to-b from-cyan-300 via-cyan-400 to-blue-500 md:w-5"
+                  className="w-3 rounded-t-md bg-gradient-to-b from-[var(--accent-violet)] via-purple-600 to-[#8A79CF] md:w-5"
                   style={{ height: `${height}%` }}
                 />
               </div>
