@@ -10,9 +10,9 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary: 'ef-button-primary text-black',
-  ghost: 'ef-button-ghost text-white',
-  outline: 'ef-button-outline text-white',
+  primary: 'ef-button-primary text-[var(--foreground)]',
+  ghost: 'ef-button-ghost text-[var(--foreground)]',
+  outline: 'ef-button-outline text-[var(--foreground)]',
 };
 
 const buttonClasses = (variant: ButtonVariant, withBorderEffect: boolean) =>
