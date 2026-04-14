@@ -18,8 +18,8 @@ export function Tabs({ tabs, active, onChange, className }: TabsProps): JSX.Elem
           className={cn(
             'rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors',
             active === tab
-              ? 'border-white/30 bg-white/10 text-white'
-              : 'border-white/12 bg-white/[0.02] text-zinc-400 hover:border-white/20 hover:text-zinc-200',
+              ? 'border-[var(--border)] bg-[var(--elements)] text-[var(--foreground)]'
+              : 'border-[var(--border)] bg-[var(--background)] text-[var(--muted)] hover:border-[var(--border)] hover:text-[var(--foreground)]',
           )}
         >
           {tab}
