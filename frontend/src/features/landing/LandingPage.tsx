@@ -29,10 +29,16 @@ export default function LandingPage(): JSX.Element {
   }, []);
 
   return (
-    <main ref={rootRef} onPointerMove={handlePointerMove} className="relative overflow-hidden bg-black text-white">
+    <main
+      ref={rootRef}
+      onPointerMove={handlePointerMove}
+      className="relative overflow-hidden bg-[var(--background)] text-[var(--foreground)] transition-colors duration-300"
+    >
       <div className="pointer-events-none absolute inset-0 landing-grid opacity-[0.14]" />
-      <div className="pointer-events-none absolute inset-x-0 top-[-30rem] mx-auto h-[52rem] w-[52rem] rounded-full bg-white/10 blur-[220px]" />
-      <div className="pointer-events-none absolute right-[-24rem] top-[20rem] h-[35rem] w-[35rem] rounded-full bg-blue-500/20 blur-[180px]" />
+
+      <div className="pointer-events-none absolute inset-x-0 top-[-30rem] mx-auto h-[52rem] w-[52rem] rounded-full blur-[220px] bg-white/10 dark:bg-white/10 [.light_&]:bg-violet-200/30" />
+
+      <div className="pointer-events-none absolute right-[-24rem] top-[20rem] h-[35rem] w-[35rem] rounded-full blur-[180px] bg-blue-500/20 dark:bg-blue-500/20 [.light_&]:bg-amber-300/20" />
 
       <div className="relative z-10">
         <HeroSection />
