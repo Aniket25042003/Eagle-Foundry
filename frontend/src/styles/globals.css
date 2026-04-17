@@ -109,7 +109,7 @@ html[data-theme='light'] {
   --color-fg: #18181b;
   --color-fg-muted: #52525b;
   --color-fg-subtle: #71717a;
-  --color-fg-inverse: #fafafa;
+  --color-fg-inverse: #18181b;
 
   --color-surface: rgba(255, 255, 255, 0.72);
   --color-surface-elevated: rgba(255, 255, 255, 0.92);
@@ -130,9 +130,9 @@ html[data-theme='light'] {
   --color-overlay: rgba(15, 23, 42, 0.35);
   --color-overlay-heavy: rgba(15, 23, 42, 0.45);
 
-  --color-accent: #4338ca;
-  --color-accent-fg: #fafafa;
-  --color-hero-rim-glow: rgba(85, 108, 255, 0.16);
+  --color-accent: #FBBF24;
+  --color-accent-fg: #18181b;
+  --color-hero-rim-glow: rgba(251, 191, 36, 0.16);
 
   --background: var(--color-page);
   --foreground: var(--color-fg);
@@ -151,17 +151,17 @@ html[data-theme='light'] {
   --btn-default-fill: #f4f4f5;
   --btn-default-fill-hover: #e4e4e7;
   --btn-default-border: rgba(15, 23, 42, 0.15);
-  --btn-primary-fill: #18181b;
-  --btn-primary-fill-hover: #27272a;
-  --btn-primary-border: rgba(15, 23, 42, 0.2);
-  --btn-primary-shadow: rgba(15, 23, 42, 0.12);
+  --btn-primary-fill: #FBBF24;
+  --btn-primary-fill-hover: #f59e0b;
+  --btn-primary-border: rgba(251, 191, 36, 0.5);
+  --btn-primary-shadow: rgba(251, 191, 36, 0.25);
   --btn-ghost-fill: rgba(255, 255, 255, 0.9);
   --btn-ghost-fill-hover: #ffffff;
   --btn-ghost-border: rgba(15, 23, 42, 0.12);
   --btn-outline-fill: transparent;
   --btn-outline-fill-hover: rgba(15, 23, 42, 0.06);
   --btn-outline-border: rgba(15, 23, 42, 0.2);
-  --btn-border-spin: rgba(24, 24, 27, 0.85);
+  --btn-border-spin: rgba(251, 191, 36, 0.9);
 
   --shadow-card: 0 8px 24px rgba(15, 23, 42, 0.08);
   --shadow-glow: 0 0 80px rgba(85, 108, 255, 0.08);

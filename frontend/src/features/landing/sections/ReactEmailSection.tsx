@@ -24,7 +24,7 @@ export function ReactEmailSection(): JSX.Element {
         <SectionHeading
           centered
           title="Build product experiences with Eagle-Foundry"
-          description="As a company, you can upload projects that you are looking to outsource to out student builders and upload full-time opportunities for students to apply to as well."
+          description="As a company, you can upload projects that you are looking to outsource to our student builders and upload full-time opportunities for students to apply to as well."
         />
       </div>
 
